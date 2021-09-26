@@ -1,6 +1,7 @@
 package com.cs.simplesurveymanager.service;
 
 import java.util.Base64;
+import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ public class SurveyService {
 
 	@Transactional
 	public void handleAttendee(SurveyParticipant participant) {
+		participant.setAttendeeDate(Calendar.getInstance().getTime());
 		surveyParticipantService.save(participant);
 
 		Survey survey = findById(participant.getSurvey().getId());

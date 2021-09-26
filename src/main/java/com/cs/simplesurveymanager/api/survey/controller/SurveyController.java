@@ -1,8 +1,13 @@
 package com.cs.simplesurveymanager.api.survey.controller;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,7 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cs.simplesurveymanager.api.survey.vo.SurveyQuestionVO;
+import com.cs.simplesurveymanager.api.survey.dto.SurveyDetailDTO;
+import com.cs.simplesurveymanager.api.survey.dto.SurveyDTO;
 import com.cs.simplesurveymanager.entity.Survey;
 import com.cs.simplesurveymanager.entity.SurveyParticipant;
 import com.cs.simplesurveymanager.entity.SurveyParticipantAnswer;
@@ -26,7 +32,6 @@ import com.cs.simplesurveymanager.service.SurveyService;
 @RestController
 @RequestMapping("/api/survey")
 public class SurveyController {
-
 	@Autowired
 	private SurveyService surveyService;
 
@@ -36,52 +41,62 @@ public class SurveyController {
 	@Autowired
 	private SurveyParticipantService surveyParticipantService;
 
+	@Value("${survey.invitation.address}")
+	private String surveyInvitationAddress;
+
 	@GetMapping()
-	private ResponseEntity<List<Survey>> get() {
+	private ResponseEntity<List<SurveyDTO>> get() {
 		List<Survey> surveyList = surveyService.findAll();
-		return ResponseEntity.ok(surveyList);
+		return ResponseEntity.ok(surveyList.stream().map(survey -> new SurveyDTO(survey)).collect(Collectors.toList()));
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<SurveyQuestionVO> getById(@PathVariable("id") long id) {
+	public ResponseEntity<SurveyDetailDTO> attend(@PathVariable("id") long id) {
 		Survey survey = surveyService.findById(id);
 		if (survey != null) {
 			List<SurveyQuestion> questions = surveyQuestionService.findBySurveyId(survey.getId());
-			SurveyQuestionVO surveyQuestionVO = new SurveyQuestionVO(survey, questions);
-			return ResponseEntity.ok(surveyQuestionVO);
+
+			return ResponseEntity.ok(new SurveyDetailDTO(survey, questions));
 		} else {
 			return ResponseEntity.notFound().build();
 		}
 	}
 
 	@PostMapping("/{id}/share")
-	public ResponseEntity<Void> share(@PathVariable("id") long surveyId, @RequestBody List<String> emails) {
+	public ResponseEntity<List<String>> share(@PathVariable("id") long surveyId, @RequestBody List<String> emails) {
 		Survey survey = surveyService.findById(surveyId);
 		if (survey != null) {
+			List<String> tokens = new ArrayList<>();
 			for (String email : emails) {
 				try {
 					String token = surveyService.share(survey, email);
 
-					System.out.println("localhost:8080/survey/attend/" + token);
+					tokens.add(token);
+
 					// TODO send mail
 				} catch (Exception e) {
+					e.printStackTrace();
 					return ResponseEntity.badRequest().build();
 				}
 			}
-			return ResponseEntity.ok().build();
+			return ResponseEntity.ok(tokens);
 		} else {
 			return ResponseEntity.notFound().build();
 		}
 	}
 
 	@GetMapping("/attend/{token}")
-	public ResponseEntity<SurveyQuestionVO> attend(@PathVariable("token") String token) {
+	public ResponseEntity<SurveyDetailDTO> attend(@PathVariable("token") String token) {
 		SurveyParticipant participant = surveyParticipantService.findByToken(token);
 
 		if (participant != null) {
+			if (participant.getAttendeeDate() != null) {
+				return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+			}
+
 			List<SurveyQuestion> questions = surveyQuestionService.findBySurveyId(participant.getSurvey().getId());
-			SurveyQuestionVO surveyQuestionVO = new SurveyQuestionVO(participant.getSurvey(), questions);
-			return ResponseEntity.ok(surveyQuestionVO);
+
+			return ResponseEntity.ok(new SurveyDetailDTO(participant.getSurvey(), questions));
 		} else {
 			return ResponseEntity.notFound().build();
 		}
@@ -92,7 +107,7 @@ public class SurveyController {
 		SurveyParticipant participant = surveyParticipantService.findByToken(token);
 
 		if (participant != null) {
-			if (participant.getAnswers() != null && !participant.getAnswers().isEmpty()) {
+			if (participant.getAttendeeDate() != null) {
 				return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 			}
 

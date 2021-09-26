@@ -1,5 +1,6 @@
 package com.cs.simplesurveymanager.entity;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CollectionTable;
@@ -34,6 +35,9 @@ public class SurveyParticipant {
 
 	@Column
 	private double score;
+
+	@Column
+	private Date attendeeDate;
 
 	@ElementCollection
 	@CollectionTable(name = "SurveyParticipantAnswer", joinColumns = @JoinColumn(name = "surveyParticipant"))
