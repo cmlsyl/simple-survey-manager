@@ -1,0 +1,13 @@
+version: '3'
+services:
+  survey-backend:
+    build: ./
+    container_name: survey-backend
+    ports:
+      - 8080:8080
+
+  survey-frontend:
+    build: ./frontend
+    container_name: survey-frontend
+    ports:
+      - 3000:3000
