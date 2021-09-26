@@ -2,6 +2,8 @@
 
 A project that provides survey management and participation steps
 
+Survey create actions will be implemented, an initial survey exists in project
+
 ## Technologies
 Backend: Spring Boot application with H2 db
 
