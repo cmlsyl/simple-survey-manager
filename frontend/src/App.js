@@ -6,6 +6,7 @@ import ManageSurveys from './components/Survey/ManageSurveys';
 function App() {
   return (
     <div className="App">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
       <BrowserRouter>
         <Switch>
 					<Route path="/survey/attend/:token" component={AttendSurvey} />

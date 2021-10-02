@@ -1,3 +1,4 @@
+import { Box, Button, Container, FormControl, FormControlLabel, FormLabel, Paper, Radio, RadioGroup, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -50,33 +51,51 @@ export default function AttendSurvey() {
   }
 
   return <div>
-      <h2>Attend Survey</h2>
-      <h4>{survey?.description}</h4>
-      <br/>
-      <br/>
-      <br/>
-      <div>
-        {questions.length ?
-          questions.map((question, index) => 
-            <div key = { index }>
-              <span>{ question.question }</span>
-              <div>
-                {
-                  question.options.map((option, optionIndex) => 
-                    <span key = { optionIndex }>
-                      <input type="radio" value={option} name={question.id} onClick={onOptionSelect}/> {option}
-                    </span>
-                  )
-                }
-              </div>
-            </div>
-          ) : <span></span>
-        }
-      </div>
-      <br/>
-      <br/>
-      <div>{completed ? <span>Thanks for your participation!</span> :
-        survey ? <button onClick={handleSubmit}>Submit</button> :
-        <span>You have already answered this survey!</span> }</div>
+      <Container maxWidth="md">
+        <h3>Attend Survey</h3>
+        <Paper elevation={3} style={{ paddingTop: "10px", paddingBottom: "30px" }}>
+          <Box sx={{ display: "flex", p: 1 }}>
+            <Box sx={{ p: 1, flexGrow: 1, textAlign:"left" }}>
+              <Typography
+                sx={{ flex: '1 1 100%' }}
+                variant="h6"
+                component="div"
+              >{ survey?.description }</Typography>
+            </Box>
+            <Box sx={{ p: 1 }}>
+              {!completed && survey && 
+                <Button variant="contained" onClick={handleSubmit}>
+                  Submit
+                </Button>
+              }
+            </Box>
+          </Box>
+          <Box sx={{ p: 2, flexGrow: 1, textAlign:"left" }}>
+            {questions.length > 0 &&
+              questions.map((question, index) =>
+                <div key = { index }>
+                  <FormControl>
+                    <FormLabel>{ question.question }</FormLabel>
+                    <RadioGroup
+                      row
+                      name={"" + question.id}
+                      onChange={onOptionSelect}
+                    >
+                      {
+                        question.options.map((option, optionIndex) => 
+                          <FormControlLabel key = { optionIndex } control={<Radio />} value={option} label={option} />
+                        )
+                      }
+                    </RadioGroup>
+                  </FormControl>
+                </div>
+              )
+            }
+          </Box>
+
+          {completed && <span>Thanks for your participation!</span> }
+          {!completed && !survey && <span>You have already answered this survey!</span> }
+        </Paper>
+      </Container>
     </div>;
 }
