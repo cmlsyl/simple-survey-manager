@@ -52,7 +52,6 @@ export default function AttendSurvey() {
 
   return <div>
       <Container maxWidth="md">
-        <h3>Attend Survey</h3>
         <Paper elevation={3} style={{ paddingTop: "10px", paddingBottom: "30px" }}>
           <Box sx={{ display: "flex", p: 1 }}>
             <Box sx={{ p: 1, flexGrow: 1, textAlign:"left" }}>

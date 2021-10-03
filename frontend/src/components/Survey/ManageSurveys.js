@@ -1,29 +1,21 @@
 import { Box, Button, Container, Dialog, DialogActions, DialogContent, DialogTitle, Paper, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import AddSurvey from './AddSurvey';
+import { useHistory } from 'react-router-dom';
 
 export default function ManageSurveys() {
   const [surveys, setSurveys] = useState([]);
-  const [addDialogVisible, setAddDialogVisible] = useState(false);
   const [shareDialogVisible, setShareDialogVisible] = useState(false);
   const [selectedSurvey, setSelectedSurvey] = useState();
   const [emails, setEmails] = useState();
 
+  const history = useHistory();
   useEffect(() => {
     axios.get('http://localhost:8080/api/survey')
         .then(response => {
           setSurveys(response.data);
         });
   }, []);
-
-  const showAddDialog = () => {
-    setAddDialogVisible(true);
-  }
-
-  const closeAddDialog = () => {
-    setAddDialogVisible(false);
-  }
 
   const handleShare = (event) => {
     const surveyIndex = surveys.findIndex(s => s.id == event.target.id);
@@ -61,7 +53,6 @@ export default function ManageSurveys() {
   }
 
   return <div>
-      <AddSurvey visible={addDialogVisible} close={closeAddDialog} />
       <Container maxWidth="md">
         <Paper elevation={3} style={{ paddingTop: "10px", paddingBottom: "30px" }}>
           <Box sx={{ display: "flex", p: 1 }}>
@@ -73,7 +64,7 @@ export default function ManageSurveys() {
               >Manage Surveys</Typography>
             </Box>
             <Box sx={{ p: 1 }}>
-              <Button variant="outlined" onClick={showAddDialog} startIcon={<span className="material-icons">add</span>}>
+              <Button variant="outlined" onClick={() => history.push('/survey/add') } startIcon={<span className="material-icons">add</span>}>
                 Add New
               </Button>
             </Box>
