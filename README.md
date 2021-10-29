@@ -2,8 +2,6 @@
 
 A project that provides survey management and participation steps
 
-Survey create actions will be implemented, an initial survey exists in project
-
 ## Technologies
 Backend: Spring Boot application with H2 db
 
@@ -29,7 +27,7 @@ Open http://localhost:3000 to view it in the browser.
 
 ### #some images
 
-
-![Screenshot from 2021-10-02 17-18-02](https://user-images.githubusercontent.com/12948391/135720599-5e133bc0-74cd-4678-b565-b3e145875c55.png)
-![Screenshot from 2021-10-02 17-18-12](https://user-images.githubusercontent.com/12948391/135720602-cda9a86c-fd6c-46d2-a010-0025d556f2f9.png)
-![Screenshot from 2021-10-02 17-19-47](https://user-images.githubusercontent.com/12948391/135720604-1db4589f-6ab8-43da-b35f-93daed7878f5.png)
+![Screenshot from 2021-10-29 14-44-57](https://user-images.githubusercontent.com/12948391/139429555-ee5ede96-363e-4993-81e4-04f53aea889f.png)
+![Screenshot from 2021-10-29 14-45-06](https://user-images.githubusercontent.com/12948391/139429624-92c0a614-7344-44ea-b577-af91ba8f9258.png)
+![Screenshot from 2021-10-29 14-45-26](https://user-images.githubusercontent.com/12948391/139429685-8da9f5a1-67b8-44bc-abba-0936a59dc88f.png)
+![Screenshot from 2021-10-29 14-45-50](https://user-images.githubusercontent.com/12948391/139429750-64469743-149c-4f53-b229-575c966b77c0.png)
