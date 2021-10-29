@@ -21,6 +21,7 @@ import com.cs.simplesurveymanager.entity.Survey;
 import com.cs.simplesurveymanager.entity.SurveyParticipant;
 import com.cs.simplesurveymanager.entity.SurveyParticipantAnswer;
 import com.cs.simplesurveymanager.entity.SurveyQuestion;
+import com.cs.simplesurveymanager.entity.SurveyQuestionOption;
 import com.cs.simplesurveymanager.service.SurveyParticipantService;
 import com.cs.simplesurveymanager.service.SurveyQuestionService;
 import com.cs.simplesurveymanager.service.SurveyService;
@@ -54,6 +55,31 @@ public class SurveyController {
 		} else {
 			return ResponseEntity.notFound().build();
 		}
+	}
+
+	@PostMapping()
+	public ResponseEntity<SurveyDetailDTO> add(@RequestBody SurveyDetailDTO surveyDetailDTO) {
+		Survey survey = new Survey();
+		survey.setDescription(surveyDetailDTO.getSurvey().getDescription());
+
+		surveyService.save(survey);
+
+		List<SurveyQuestion> questions = surveyDetailDTO.getQuestions().stream().map(q -> {
+			SurveyQuestion question = new SurveyQuestion();
+			question.setQuestion(q.getQuestion());
+
+			List<SurveyQuestionOption> options = q.getOptions().stream()
+					.map(o -> new SurveyQuestionOption(o.getLabel(), o.getCoefficient()))
+					.collect(Collectors.toList());
+
+			question.setOptions(options);
+			question.setSurvey(survey);
+			return question;
+		}).collect(Collectors.toList());
+
+		surveyQuestionService.saveAll(questions);
+
+		return ResponseEntity.ok(new SurveyDetailDTO(survey, questions));
 	}
 
 	@PostMapping("/{id}/share")

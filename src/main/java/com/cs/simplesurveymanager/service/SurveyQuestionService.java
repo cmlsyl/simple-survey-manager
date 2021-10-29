@@ -18,6 +18,10 @@ public class SurveyQuestionService {
 		return surveyQuestionRepository.save(surveyQuestion);
 	}
 
+	public List<SurveyQuestion> saveAll(List<SurveyQuestion> surveyQuestionList) {
+		return surveyQuestionRepository.saveAll(surveyQuestionList);
+	}
+
 	public List<SurveyQuestion> findBySurveyId(long surveyId) {
 		return surveyQuestionRepository.findBySurvey_id(surveyId);
 	}

@@ -17,13 +17,13 @@ import lombok.Setter;
 public class SurveyQuestionDTO {
 	private long id;
 	private String question;
-	private List<String> options;
+	private List<SurveyQuestionOptionDTO> options;
 
 	public SurveyQuestionDTO(SurveyQuestion question) {
 		this.id = question.getId();
 		this.question = question.getQuestion();
 		this.options = question.getOptions().stream()
-				.map(q -> q.getLabel())
+				.map(q -> new SurveyQuestionOptionDTO(q.getLabel(), q.getCoefficient()))
 				.collect(Collectors.toList());
 	}
 }
