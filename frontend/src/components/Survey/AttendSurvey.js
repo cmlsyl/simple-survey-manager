@@ -80,9 +80,9 @@ export default function AttendSurvey() {
                       name={"" + question.id}
                       onChange={onOptionSelect}
                     >
-                      {
+                      {question.options.length > 0 &&
                         question.options.map((option, optionIndex) => 
-                          <FormControlLabel key = { optionIndex } control={<Radio />} value={option} label={option} />
+                          <FormControlLabel key = { optionIndex } control={<Radio />} value={option.label} label={option.label} />
                         )
                       }
                     </RadioGroup>

@@ -17,9 +17,8 @@ export default function ManageSurveys() {
         });
   }, []);
 
-  const handleShare = (event) => {
-    const surveyIndex = surveys.findIndex(s => s.id == event.target.id);
-    setSelectedSurvey(surveys[surveyIndex]);
+  const handleShare = (index) => {
+    setSelectedSurvey(surveys[index]);
     setShareDialogVisible(true);
   }
 
@@ -86,7 +85,7 @@ export default function ManageSurveys() {
                     <TableCell>{ (survey.attendeeCount / (survey.shareCount > 0 ? survey.shareCount : 1)).toFixed(2) }</TableCell>
                     <TableCell>{ survey.score.toFixed(2) }</TableCell>
                     <TableCell>
-                      <Button variant="contained" onClick={handleShare} id={survey.id}>
+                      <Button variant="contained" onClick={(event) => { handleShare(index) }}>
                         <span className="material-icons">send</span>
                       </Button>
                     </TableCell>

@@ -7,7 +7,9 @@ export default function AddSurvey() {
   const history = useHistory();
 
   const initialData = {
-    description: "",
+    survey: {
+      description: ""
+    },
     questions: [
       {
         question: "",
@@ -18,18 +20,50 @@ export default function AddSurvey() {
 
   const [data, setData] = useState(initialData);
 
+  const handleTextChange = (event, questionIndex, optionIndex) => {
+    if (optionIndex > -1) {
+
+      setData({
+        survey: data.survey,
+        questions: [...data.questions.slice(0, questionIndex), {
+          question: data.questions[questionIndex].question,
+          options: [...data.questions[questionIndex].options.slice(0, optionIndex), {
+            label: event.target.id.indexOf('o') > -1 ? event.target.value : data.questions[questionIndex].options[optionIndex].label,
+            coefficient: event.target.id.indexOf('c') > -1 ? event.target.value : data.questions[questionIndex].options[optionIndex].coefficient
+          }, ...data.questions[questionIndex].options.slice(optionIndex + 1)]
+        }, ...data.questions.slice(questionIndex + 1)]
+      });
+    } else if (questionIndex > -1) {
+      setData({
+        survey: data.survey,
+        questions: [...data.questions.slice(0, questionIndex), {
+          question: event.target.value,
+          options: data.questions[questionIndex].options
+        }, ...data.questions.slice(questionIndex + 1)]
+      });
+    } else {
+      setData({
+        survey: {
+          description: event.target.value
+        },
+        questions: data.questions
+      });
+    }
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault();
     axios.post('http://localhost:8080/api/survey', data)
       .then(response => {
         console.log(response);
+        history.push("/");
     });
   }
 
   const addQuestion = (event) => {
     event.preventDefault();
     setData({
-      description: data.description,
+      survey: data.survey,
       questions: [...data.questions, {
         question: "",
         options: []
@@ -40,7 +74,7 @@ export default function AddSurvey() {
   const removeQuestion = (event, questionIndex) => {
     event.preventDefault();
     setData({
-      description: data.description,
+      survey: data.survey,
       questions: [...data.questions.slice(0, questionIndex), 
         ...data.questions.slice(questionIndex + 1)]
     });
@@ -49,11 +83,11 @@ export default function AddSurvey() {
   const addOption = (event, questionIndex) => {
     event.preventDefault();
     setData({
-      description: data.description,
+      survey: data.survey,
       questions: [...data.questions.slice(0, questionIndex), {
         question: data.questions[questionIndex].question,
         options: [...data.questions[questionIndex].options, {
-          value: "",
+          label: "",
           coefficient: 1
         }]
       }, ...data.questions.slice(questionIndex + 1)]
@@ -63,7 +97,7 @@ export default function AddSurvey() {
   const removeOption = (event, questionIndex, optionIndex) => {
     event.preventDefault();
     setData({
-      description: data.description,
+      survey: data.survey,
       questions: [...data.questions.slice(0, questionIndex), {
         question: data.questions[questionIndex].question,
         options: [...data.questions[questionIndex].options.slice(0, optionIndex), 
@@ -96,7 +130,8 @@ export default function AddSurvey() {
                   label="Description"
                   multiline
                   fullWidth
-                  value={data.description}
+                  value={data.survey.description}
+                  onChange={(event) => handleTextChange(event, -1, -1)}
               />
             </Box>
 
@@ -116,21 +151,26 @@ export default function AddSurvey() {
                               fullWidth
                               rows={2}
                               value={question.question}
+                              onChange={(event) => handleTextChange(event, questionIndex, -1)}
                           />
                           <Button sx={{  mt: 1, position: "relative", ml: -8 }} variant="contained" color="error" onClick={(event) => removeQuestion(event, questionIndex)}><span className="material-icons">close</span></Button>
                           {question.options.map((option, optionIndex) =>
                             <div key={optionIndex}>
                               <TextField
+                                  id={"o" + questionIndex + "-" + optionIndex}
                                   variant="standard"
                                   label="Option"
-                                  value={option.value}
+                                  value={option.label}
+                                  onChange={(event) => handleTextChange(event, questionIndex, optionIndex)}
                               />
                               <TextField
+                                  id={"c" + questionIndex + "-" + optionIndex}
                                   sx={{  ml: 2, mr: 2, width: 60 }}
                                   type="number"
                                   variant="standard"
                                   label="Coefficient"
                                   value={option.coefficient}
+                                  onChange={(event) => handleTextChange(event, questionIndex, optionIndex)}
                               />
                               <Button sx={{  mt: 1 }} variant="contained" color="error" onClick={(event) => removeOption(event, questionIndex, optionIndex)}><span className="material-icons">close</span></Button>
                             </div>
